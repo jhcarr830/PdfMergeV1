@@ -8,6 +8,10 @@ namespace MergeTest2
     internal class Program
     {
         const string PATH_TO_DATA_FILES = @"C:\Users\jhcarr\Projects\";
+        const string PATH_TO_SOURCE_FILES = @"C:\Users\jhcarr\Projects\PdfSourceFiles\";
+        const string PATH_TO_OUTPUT_FILES = @"C:\Users\jhcarr\Projects\PdfOutputFiles\";
+        const string PATH_TO_FONT_FILES = @"C:\Users\jhcarr\Projects\FontFiles\";
+        const string PATH_TO_MERGE_FILES = @"C:\Users\jhcarr\Projects\MergeInfoFiles\";
         static void Main(string[] args)
         {
             GlobalFontSettings.FontResolver = new CustomFontResolver();
@@ -24,8 +28,8 @@ namespace MergeTest2
             }
             string docsetFileName = args[0];
             string mergedataFileName = args[1];
-            List<DocsetRecord> docsList = new List<DocsetRecord>();
-            DocsetRecord doc;
+            List<string> docsList = new List<string>();
+            //DocsetRecord doc;
             int currRow = 0;
             try
             {
@@ -36,25 +40,32 @@ namespace MergeTest2
                     {
                         currRow++;
                         //Console.WriteLine(line);
-                        string[] parts = line.Split('\t');
-                        if (parts.Length > 2)
+                        if (line.Length > 0)
                         {
-                            if (parts[0].Substring(0, 1) != "#")  // skip comments
+                            if (line.Substring(0, 1) != "#")
                             {
-                                doc = new DocsetRecord();
-                                if (int.TryParse(parts[2], out int docnum))
-                                    doc.DocumentNumber = docnum;
-                                else
-                                    Console.WriteLine($"Row {currRow}: Unable to convert DocumentNumber to integer");
-                                doc.DocumentName = parts[1];
-                                if (int.TryParse(parts[2], out int num))
-                                    doc.NumCopies = num;
-                                else
-                                    Console.WriteLine($"Row {currRow}: Unable to convert NumCopies to integer");
-                                docsList.Add(doc);
-                                Console.WriteLine($"Document: {doc.DocumentName}");
+                                docsList.Add(line);
                             }
                         }
+                        //string[] parts = line.Split('\t');
+                        //if (parts.Length > 2)
+                        //{
+                        //    if (parts[0].Substring(0, 1) != "#")  // skip comments
+                        //    {
+                        //        doc = new DocsetRecord();
+                        //        if (int.TryParse(parts[0], out int docnum))
+                        //            doc.DocumentNumber = docnum;
+                        //        else
+                        //            Console.WriteLine($"Row {currRow}: Unable to convert DocumentNumber to integer");
+                        //        doc.DocumentName = parts[1];
+                        //        if (int.TryParse(parts[2], out int num))
+                        //            doc.NumCopies = num;
+                        //        else
+                        //            Console.WriteLine($"Row {currRow}: Unable to convert NumCopies to integer");
+                        //        docsList.Add(doc);
+                        //        Console.WriteLine($"Document: {doc.DocumentName}");
+                        //    }
+                        //}
                     }
                 }
             }
@@ -72,7 +83,7 @@ namespace MergeTest2
             Dictionary<string, string> mergeDataDict = new Dictionary<string, string>();
             try
             {
-                using (StreamReader sr = new StreamReader(PATH_TO_DATA_FILES + mergedataFileName))
+                using (StreamReader sr = new StreamReader(PATH_TO_MERGE_FILES + mergedataFileName))
                 {
                     string? line;
                     while ((line = sr.ReadLine()) != null)
@@ -102,22 +113,18 @@ namespace MergeTest2
             //XFont font = new XFont("Times", 12, XFontStyleEx.Regular);
 
             int tempDocNumber = 1;
-            // Print all documents in order.
+            // Print all documents in the document set in order.
             //Console.WriteLine("Printing all Documents in order");
             for (int ixx = 0; ixx < docsList.Count; ixx++)
             {
-                if (docsList[ixx].NumCopies > 0)
-                {
-                    //Console.WriteLine($"{docsList[ixx].DocumentName} Copies: {docsList[ixx].NumCopies}");
-                    for (int iyy = 0; iyy < (docsList[ixx].NumCopies); iyy++)
-                    {
-                        //Console.WriteLine($"{docsList[ixx].DocumentName} #{iyy + 1}");
-                        MergePrintDocument(docsList[ixx].DocumentName + ".pdf", docsList[ixx].DocumentName + ".mrg", mergeDataDict, tempDocNumber);
-                        tempDocNumber++;
-                    }
-                }
+                //Console.WriteLine($"{docsList[ixx].DocumentName} Copies: {docsList[ixx].NumCopies}");
+                //for (int iyy = 0; iyy < (docsList[ixx].NumCopies); iyy++)
+                //{
+                //Console.WriteLine($"{docsList[ixx].DocumentName} #{iyy + 1}");
+                MergePrintDocument(docsList[ixx] + ".pdf", docsList[ixx] + ".mrg", mergeDataDict, tempDocNumber);
+                tempDocNumber++;
+                //}
             }
-
         }
 
         public class CustomFontResolver : IFontResolver
@@ -167,7 +174,7 @@ namespace MergeTest2
             }
             public byte[] GetFont(string faceName)
             {
-                var fontPath = Path.Combine(@"C:\Users\jhcarr\Projects\Fonts\", faceName);
+                var fontPath = Path.Combine(PATH_TO_FONT_FILES, faceName);
                 using (var ms = new MemoryStream())
                 {
                     try
@@ -201,17 +208,17 @@ namespace MergeTest2
             try
             {
                 // load Merge data into mergeFieldList
-                using (StreamReader sr = new StreamReader(PATH_TO_DATA_FILES + MergeFileName))
+                using (StreamReader sr = new StreamReader(PATH_TO_MERGE_FILES + MergeFileName))
                 {
                     string? line;
 
                     while ((line = sr.ReadLine()) != null)
                     {
                         currRow++;
-                        string[] parts = line.Split('\t');  // there must be 7 parts
-                        if (parts.Length > 6)
+                        if (line.Substring(0, 1) != "#")  // skip comments
                         {
-                            if (parts[0].Substring(0, 1) != "#")
+                            string[] parts = line.Split('\t');  // there must be 7 parts
+                            if (parts.Length > 6)
                             {
                                 mergeRec = new DocumentMergeDataRecord();
                                 mergeRec.FieldName = parts[0];
@@ -235,14 +242,14 @@ namespace MergeTest2
                                     mergeRec.YPos = 0;
                                 mergeFieldList.Add(mergeRec);
                             }
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Error in row {currRow} file {PATH_TO_DATA_FILES + MergeFileName}");
+                            else
+                            {
+                                Console.WriteLine($"Error in row {currRow} file {PATH_TO_MERGE_FILES + MergeFileName}");
+                            }
                         }
                     }
                 }
-                string inputPdfFile = PATH_TO_DATA_FILES + DocumentFileName;
+                string inputPdfFile = PATH_TO_SOURCE_FILES + DocumentFileName;
                 PdfDocument pdfDocument;
                 PdfPage page;
                 XGraphics gfx;
@@ -284,8 +291,8 @@ namespace MergeTest2
                     //Console.WriteLine("===" + mergeDataDict[rec.FieldName] + "===");
                 }
                 
-                //Console.WriteLine($"Saving page to {PATH_TO_DATA_FILES}{intermediateDocName}");
-                pdfDocument.Save($"{PATH_TO_DATA_FILES}{intermediateDocName}");
+                //Console.WriteLine($"Saving page to {PATH_TO_OUTPUT_FILES}{intermediateDocName}");
+                pdfDocument.Save($"{PATH_TO_OUTPUT_FILES}{intermediateDocName}");
                 pdfDocument.Dispose();
                 //Console.WriteLine($"============{DocumentFileName}================");
                 //foreach (DocumentMergeDataRecord rec in mergeFieldList)
@@ -301,12 +308,12 @@ namespace MergeTest2
             
         }
 
-        public class DocsetRecord
-        {
-            public int DocumentNumber = 0;
-            public string DocumentName = "";
-            public int NumCopies = 0;
-        }
+        //public class DocsetRecord
+        //{
+        //    public int DocumentNumber = 0;
+        //    public string DocumentName = "";
+        //    public int NumCopies = 0;
+        //}
 
         public class DocumentMergeDataRecord
         {
