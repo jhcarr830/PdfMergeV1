@@ -274,41 +274,39 @@ namespace MergeTest2
                     //Console.WriteLine("===" + mergeDataDict[rec.FieldName] + "===");
                 }
 
-
                 if (DRAW_GRID)
                 {
                     font = new XFont("Arial", 10, XFontStyleEx.Regular);
-                    page = pdfDocument.Pages[0];
-                    gfx = XGraphics.FromPdfPage(page);
-                    pageWidth = page.Width;
-                    pageHeight = page.Height;
-                    double x, y;
-                    // Horizontal Lines
                     XPen pen = new XPen(XColors.Pink, 1.0 / 36.0);
-                    for (x = 0; x < pageWidth; x += 36.0)
+                    for (int iPages = 0; iPages < pdfDocument.Pages.Count; iPages++)
                     {
-                        for (y = 0; y < pageHeight; y += 36.0)
+                        //page = pdfDocument.Pages[0];
+                        page = pdfDocument.Pages[iPages];
+                        gfx = XGraphics.FromPdfPage(page);
+                        pageWidth = page.Width;
+                        pageHeight = page.Height;
+                        double x, y;
+                        // Horizontal Lines
+                        for (x = 0; x < pageWidth; x += 36.0)
                         {
-                            gfx.DrawLine(pen, x, y, pageWidth, y);
-                            if (x == 0)
-                                gfx.DrawString(y.ToString(), font, XBrushes.Gray, new XRect(0, y, pageWidth, pageHeight), XStringFormats.TopLeft);
+                            for (y = 0; y < pageHeight; y += 36.0)
+                            {
+                                gfx.DrawLine(pen, x, y, pageWidth, y);
+                                if (x == 0)
+                                    gfx.DrawString(y.ToString(), font, XBrushes.Gray, new XRect(0, y, pageWidth, pageHeight), XStringFormats.TopLeft);
+                            }
+                        }
+                        // Vertical Lines
+                        for (y = 0; y < pageWidth; y += 36.0)
+                        {
+                            for (x = 0; x < pageHeight; x += 36.0)
+                            {
+                                gfx.DrawLine(pen, y, x, y, pageWidth);
+                                if (y == 0 && x > 0)
+                                    gfx.DrawString(x.ToString(), font, XBrushes.Gray, new XRect(x, 0, pageWidth, pageHeight), XStringFormats.TopLeft);
+                            }
                         }
                     }
-
-                    //gfx.DrawLine(pen, 50, 50, 250, 50);
-
-                    // Vertical Lines
-                    for (y = 0; y < pageWidth ; y += 36.0)
-                    {
-                        for (x = 0; x < pageHeight; x += 36.0)
-                        {
-                            gfx.DrawLine(pen, y, x, y, pageWidth);
-                            if (y == 0 && x > 0)
-                                gfx.DrawString(x.ToString(), font, XBrushes.Gray, new XRect(x, 0, pageWidth, pageHeight), XStringFormats.TopLeft);
-                        }
-                    }
-
-                    //gfx.DrawLine(pen, 50, 50, 50, 200);
                 }
 
                 //Console.WriteLine($"Saving page to {PATH_TO_OUTPUT_FILES}{intermediateDocName}");
