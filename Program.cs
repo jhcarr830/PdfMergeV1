@@ -12,6 +12,7 @@ namespace MergeTest2
         const string PATH_TO_OUTPUT_FILES = @"C:\Users\jhcarr\Projects\PdfOutputFiles\";
         const string PATH_TO_FONT_FILES = @"C:\Users\jhcarr\Projects\FontFiles\";
         const string PATH_TO_MERGE_FILES = @"C:\Users\jhcarr\Projects\MergeInfoFiles\";
+        const bool DRAW_GRID = true;
         static void Main(string[] args)
         {
             GlobalFontSettings.FontResolver = new CustomFontResolver();
@@ -47,28 +48,10 @@ namespace MergeTest2
                                 docsList.Add(line);
                             }
                         }
-                        //string[] parts = line.Split('\t');
-                        //if (parts.Length > 2)
-                        //{
-                        //    if (parts[0].Substring(0, 1) != "#")  // skip comments
-                        //    {
-                        //        doc = new DocsetRecord();
-                        //        if (int.TryParse(parts[0], out int docnum))
-                        //            doc.DocumentNumber = docnum;
-                        //        else
-                        //            Console.WriteLine($"Row {currRow}: Unable to convert DocumentNumber to integer");
-                        //        doc.DocumentName = parts[1];
-                        //        if (int.TryParse(parts[2], out int num))
-                        //            doc.NumCopies = num;
-                        //        else
-                        //            Console.WriteLine($"Row {currRow}: Unable to convert NumCopies to integer");
-                        //        docsList.Add(doc);
-                        //        Console.WriteLine($"Document: {doc.DocumentName}");
-                        //    }
-                        //}
                     }
                 }
             }
+
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
@@ -262,8 +245,8 @@ namespace MergeTest2
 
                 foreach (DocumentMergeDataRecord rec in mergeFieldList)
                 {
-                    // todo: handle multiple pages in input pdf file
-                    page = pdfDocument.Pages[0];
+                    // handle multiple pages in input pdf file
+                    page = pdfDocument.Pages[rec.Page - 1];
                     gfx = XGraphics.FromPdfPage(page);
                     switch (rec.FontStyle)
                     {
@@ -290,7 +273,44 @@ namespace MergeTest2
                     gfx.Dispose();
                     //Console.WriteLine("===" + mergeDataDict[rec.FieldName] + "===");
                 }
-                
+
+
+                if (DRAW_GRID)
+                {
+                    font = new XFont("Arial", 10, XFontStyleEx.Regular);
+                    page = pdfDocument.Pages[0];
+                    gfx = XGraphics.FromPdfPage(page);
+                    pageWidth = page.Width;
+                    pageHeight = page.Height;
+                    double x, y;
+                    // Horizontal Lines
+                    XPen pen = new XPen(XColors.Pink, 1.0 / 36.0);
+                    for (x = 0; x < pageWidth; x += 36.0)
+                    {
+                        for (y = 0; y < pageHeight; y += 36.0)
+                        {
+                            gfx.DrawLine(pen, x, y, pageWidth, y);
+                            if (x == 0)
+                                gfx.DrawString(y.ToString(), font, XBrushes.Gray, new XRect(0, y, pageWidth, pageHeight), XStringFormats.TopLeft);
+                        }
+                    }
+
+                    //gfx.DrawLine(pen, 50, 50, 250, 50);
+
+                    // Vertical Lines
+                    for (y = 0; y < pageWidth ; y += 36.0)
+                    {
+                        for (x = 0; x < pageHeight; x += 36.0)
+                        {
+                            gfx.DrawLine(pen, y, x, y, pageWidth);
+                            if (y == 0 && x > 0)
+                                gfx.DrawString(x.ToString(), font, XBrushes.Gray, new XRect(x, 0, pageWidth, pageHeight), XStringFormats.TopLeft);
+                        }
+                    }
+
+                    //gfx.DrawLine(pen, 50, 50, 50, 200);
+                }
+
                 //Console.WriteLine($"Saving page to {PATH_TO_OUTPUT_FILES}{intermediateDocName}");
                 pdfDocument.Save($"{PATH_TO_OUTPUT_FILES}{intermediateDocName}");
                 pdfDocument.Dispose();
