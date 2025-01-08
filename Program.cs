@@ -12,7 +12,6 @@ namespace MergeTest2
         const string PATH_TO_OUTPUT_FILES = @"C:\Users\jhcarr\Projects\PdfOutputFiles\";
         const string PATH_TO_FONT_FILES = @"C:\Users\jhcarr\Projects\FontFiles\";
         const string PATH_TO_MERGE_FILES = @"C:\Users\jhcarr\Projects\MergeInfoFiles\";
-        const bool DRAW_GRID = true;
         static void Main(string[] args)
         {
             GlobalFontSettings.FontResolver = new CustomFontResolver();
@@ -29,6 +28,13 @@ namespace MergeTest2
             }
             string docsetFileName = args[0];
             string mergedataFileName = args[1];
+            bool drawGrid = false;
+            if (args.Length > 2)
+            {
+                string sDrawGrid = args[2];
+                if (sDrawGrid == "grid")
+                    drawGrid = true;
+            }
             List<string> docsList = new List<string>();
             //DocsetRecord doc;
             int currRow = 0;
@@ -104,7 +110,7 @@ namespace MergeTest2
                 //for (int iyy = 0; iyy < (docsList[ixx].NumCopies); iyy++)
                 //{
                 //Console.WriteLine($"{docsList[ixx].DocumentName} #{iyy + 1}");
-                MergePrintDocument(docsList[ixx] + ".pdf", docsList[ixx] + ".mrg", mergeDataDict, tempDocNumber);
+                MergePrintDocument(docsList[ixx] + ".pdf", docsList[ixx] + ".mrg", mergeDataDict, tempDocNumber, drawGrid);
                 tempDocNumber++;
                 //}
             }
@@ -178,7 +184,7 @@ namespace MergeTest2
             }
         }
 
-        public static void MergePrintDocument(string DocumentFileName, string MergeFileName, Dictionary<string, string> mergeDataDict, int tempDocNumber)
+        public static void MergePrintDocument(string DocumentFileName, string MergeFileName, Dictionary<string, string> mergeDataDict, int tempDocNumber, bool drawGrid = false)
         {
             //Console.WriteLine($">>>{DocumentFileName} {MergeFileName}<<<");
             List<DocumentMergeDataRecord> mergeFieldList = new List<DocumentMergeDataRecord>();
@@ -274,7 +280,7 @@ namespace MergeTest2
                     //Console.WriteLine("===" + mergeDataDict[rec.FieldName] + "===");
                 }
 
-                if (DRAW_GRID)
+                if (drawGrid)
                 {
                     font = new XFont("Arial", 10, XFontStyleEx.Regular);
                     XPen pen = new XPen(XColors.Pink, 1.0 / 36.0);
