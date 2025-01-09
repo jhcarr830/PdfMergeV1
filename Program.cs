@@ -7,7 +7,7 @@ namespace MergeTest2
 {
     internal class Program
     {
-        const string PATH_TO_DATA_FILES = @"C:\Users\jhcarr\Projects\";
+        const string PATH_TO_DATA_FILES = @"C:\Users\jhcarr\Projects\PdfMergeDataFiles\";
         const string PATH_TO_SOURCE_FILES = @"C:\Users\jhcarr\Projects\PdfSourceFiles\";
         const string PATH_TO_OUTPUT_FILES = @"C:\Users\jhcarr\Projects\PdfOutputFiles\";
         const string PATH_TO_FONT_FILES = @"C:\Users\jhcarr\Projects\FontFiles\";
@@ -26,14 +26,21 @@ namespace MergeTest2
             {
                 Console.WriteLine(args[i]);
             }
-            string docsetFileName = args[0];
-            string mergedataFileName = args[1];
+            string docsetFileName = args[0];  // contains list of documents to be printed
+            string mergedataFileName = args[1];  // contains the data to be merged into documents
             bool drawGrid = false;
             if (args.Length > 2)
             {
                 string sDrawGrid = args[2];
                 if (sDrawGrid == "grid")
                     drawGrid = true;
+            }
+            // delete temp files in output directory (in case there are leftovers)
+            var temporaryfiles = Directory.GetFiles(PATH_TO_OUTPUT_FILES, "Temp_*.pdf");
+            foreach (string file in temporaryfiles)
+            {
+                if (File.Exists(file))
+                    File.Delete(file);
             }
             List<string> docsList = new List<string>();
             //DocsetRecord doc;
@@ -57,22 +64,15 @@ namespace MergeTest2
                     }
                 }
             }
-
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
             }
-            //for (int ixx = 0; ixx < docsList.Count; ixx++)
-            //{
-            //    Console.Write(docsList[ixx].DocumentName + " - ");
-            //    Console.WriteLine(docsList[ixx].NumCopies);
-            //}
-
-            // Get Merge Data and save it in a Dictionary
+            // Get Merge Data and save it in a Dictionary object
             Dictionary<string, string> mergeDataDict = new Dictionary<string, string>();
             try
             {
-                using (StreamReader sr = new StreamReader(PATH_TO_MERGE_FILES + mergedataFileName))
+                using (StreamReader sr = new StreamReader(PATH_TO_DATA_FILES + mergedataFileName))
                 {
                     string? line;
                     while ((line = sr.ReadLine()) != null)
@@ -99,21 +99,35 @@ namespace MergeTest2
             }
 
             XFont font = new XFont("Arial", 12, XFontStyleEx.Regular);
-            //XFont font = new XFont("Times", 12, XFontStyleEx.Regular);
+            // Note: only 2 fonts are used in this program: Arial and Times
 
             int tempDocNumber = 1;
             // Print all documents in the document set in order.
-            //Console.WriteLine("Printing all Documents in order");
             for (int ixx = 0; ixx < docsList.Count; ixx++)
             {
-                //Console.WriteLine($"{docsList[ixx].DocumentName} Copies: {docsList[ixx].NumCopies}");
-                //for (int iyy = 0; iyy < (docsList[ixx].NumCopies); iyy++)
-                //{
-                //Console.WriteLine($"{docsList[ixx].DocumentName} #{iyy + 1}");
                 MergePrintDocument(docsList[ixx] + ".pdf", docsList[ixx] + ".mrg", mergeDataDict, tempDocNumber, drawGrid);
                 tempDocNumber++;
-                //}
             }
+            // merge all documents into one:
+            if (File.Exists(PATH_TO_OUTPUT_FILES + "CombinedDocs.pdf"))
+                File.Delete(PATH_TO_OUTPUT_FILES + "CombinedDocs.pdf");
+            var intermediateFiles = Directory.GetFiles(PATH_TO_OUTPUT_FILES, "Temp_*.pdf");
+            // sort the list
+            Array.Sort(intermediateFiles);
+            PdfDocument outputDocument = new PdfDocument();
+            foreach (string file in intermediateFiles)
+            {
+                //Console.WriteLine(file);  to verify the file is in numeric order
+                PdfDocument inputDocument = PdfReader.Open(file, PdfDocumentOpenMode.Import);
+                foreach (PdfPage page in inputDocument.Pages)
+                {
+                    outputDocument.AddPage(page);
+                }
+                inputDocument.Dispose();
+                if (File.Exists(file))
+                    File.Delete(file);
+            }
+            outputDocument.Save(PATH_TO_OUTPUT_FILES + "CombinedDocs.pdf");
         }
 
         public class CustomFontResolver : IFontResolver
@@ -323,7 +337,7 @@ namespace MergeTest2
                 //{
                 //    Console.WriteLine($"{rec.FieldName}, {rec.FontName}, {rec.FontSize}, {rec.FontStyle}, {rec.Page}, {rec.XPos}, {rec.YPos}");
                 //}
-                Console.WriteLine($"{intermediateDocName} is ready");
+                //Console.WriteLine($"{intermediateDocName} is ready");
             }
             catch (Exception ex)
             {
@@ -331,13 +345,6 @@ namespace MergeTest2
             }
             
         }
-
-        //public class DocsetRecord
-        //{
-        //    public int DocumentNumber = 0;
-        //    public string DocumentName = "";
-        //    public int NumCopies = 0;
-        //}
 
         public class DocumentMergeDataRecord
         {
