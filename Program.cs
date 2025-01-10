@@ -7,13 +7,9 @@ namespace MergeTest2
 {
     internal class Program
     {
-        const string PATH_TO_DATA_FILES = @"C:\Users\jhcarr\Projects\PdfMergeDataFiles\";
-        const string PATH_TO_SOURCE_FILES = @"C:\Users\jhcarr\Projects\PdfSourceFiles\";
-        const string PATH_TO_OUTPUT_FILES = @"C:\Users\jhcarr\Projects\PdfOutputFiles\";
-        const string PATH_TO_FONT_FILES = @"C:\Users\jhcarr\Projects\FontFiles\";
-        const string PATH_TO_MERGE_FILES = @"C:\Users\jhcarr\Projects\MergeInfoFiles\";
         static void Main(string[] args)
         {
+            Globals.ReadCfgFile();
             GlobalFontSettings.FontResolver = new CustomFontResolver();
             //Console.WriteLine("Hello, World!");
             if (args.Length == 0)
@@ -36,7 +32,7 @@ namespace MergeTest2
                     drawGrid = true;
             }
             // delete temp files in output directory (in case there are leftovers)
-            var temporaryfiles = Directory.GetFiles(PATH_TO_OUTPUT_FILES, "Temp_*.pdf");
+            var temporaryfiles = Directory.GetFiles(Globals.PathToOutputFiles, "Temp_*.pdf");
             foreach (string file in temporaryfiles)
             {
                 if (File.Exists(file))
@@ -47,7 +43,7 @@ namespace MergeTest2
             int currRow = 0;
             try
             {
-                using (StreamReader sr = new StreamReader(PATH_TO_DATA_FILES + docsetFileName))
+                using (StreamReader sr = new StreamReader(Globals.PathToDataFiles + docsetFileName))
                 {
                     string? line;
                     while ((line = sr.ReadLine()) != null)
@@ -72,7 +68,7 @@ namespace MergeTest2
             Dictionary<string, string> mergeDataDict = new Dictionary<string, string>();
             try
             {
-                using (StreamReader sr = new StreamReader(PATH_TO_DATA_FILES + mergedataFileName))
+                using (StreamReader sr = new StreamReader(Globals.PathToDataFiles + mergedataFileName))
                 {
                     string? line;
                     while ((line = sr.ReadLine()) != null)
@@ -109,15 +105,14 @@ namespace MergeTest2
                 tempDocNumber++;
             }
             // merge all documents into one:
-            if (File.Exists(PATH_TO_OUTPUT_FILES + "CombinedDocs.pdf"))
-                File.Delete(PATH_TO_OUTPUT_FILES + "CombinedDocs.pdf");
-            var intermediateFiles = Directory.GetFiles(PATH_TO_OUTPUT_FILES, "Temp_*.pdf");
+            if (File.Exists(Globals.PathToOutputFiles + "CombinedDocs.pdf"))
+                File.Delete(Globals.PathToOutputFiles + "CombinedDocs.pdf");
+            var intermediateFiles = Directory.GetFiles(Globals.PathToOutputFiles, "Temp_*.pdf");
             // sort the list
             Array.Sort(intermediateFiles);
             PdfDocument outputDocument = new PdfDocument();
             foreach (string file in intermediateFiles)
             {
-                //Console.WriteLine(file);  to verify the file is in numeric order
                 PdfDocument inputDocument = PdfReader.Open(file, PdfDocumentOpenMode.Import);
                 foreach (PdfPage page in inputDocument.Pages)
                 {
@@ -127,7 +122,7 @@ namespace MergeTest2
                 if (File.Exists(file))
                     File.Delete(file);
             }
-            outputDocument.Save(PATH_TO_OUTPUT_FILES + "CombinedDocs.pdf");
+             outputDocument.Save(Globals.PathToOutputFiles + "CombinedDocs.pdf");
         }
 
         public class CustomFontResolver : IFontResolver
@@ -177,7 +172,7 @@ namespace MergeTest2
             }
             public byte[] GetFont(string faceName)
             {
-                var fontPath = Path.Combine(PATH_TO_FONT_FILES, faceName);
+                var fontPath = Path.Combine(Globals.PathToFontFiles, faceName);
                 using (var ms = new MemoryStream())
                 {
                     try
@@ -211,7 +206,7 @@ namespace MergeTest2
             try
             {
                 // load Merge data into mergeFieldList
-                using (StreamReader sr = new StreamReader(PATH_TO_MERGE_FILES + MergeFileName))
+                using (StreamReader sr = new StreamReader(Globals.PathToMergeFiles + MergeFileName))
                 {
                     string? line;
 
@@ -247,12 +242,12 @@ namespace MergeTest2
                             }
                             else
                             {
-                                Console.WriteLine($"Error in row {currRow} file {PATH_TO_MERGE_FILES + MergeFileName}");
+                                Console.WriteLine($"Error in row {currRow} file {Globals.PathToMergeFiles + MergeFileName}");
                             }
                         }
                     }
                 }
-                string inputPdfFile = PATH_TO_SOURCE_FILES + DocumentFileName;
+                string inputPdfFile = Globals.PathToSourceFiles + DocumentFileName;
                 PdfDocument pdfDocument;
                 PdfPage page;
                 XGraphics gfx;
@@ -329,8 +324,8 @@ namespace MergeTest2
                     }
                 }
 
-                //Console.WriteLine($"Saving page to {PATH_TO_OUTPUT_FILES}{intermediateDocName}");
-                pdfDocument.Save($"{PATH_TO_OUTPUT_FILES}{intermediateDocName}");
+                //Console.WriteLine($"Saving page to {Globals.PathToOutputFiles}{intermediateDocName}");
+                pdfDocument.Save($"{Globals.PathToOutputFiles}{intermediateDocName}");
                 pdfDocument.Dispose();
                 //Console.WriteLine($"============{DocumentFileName}================");
                 //foreach (DocumentMergeDataRecord rec in mergeFieldList)
