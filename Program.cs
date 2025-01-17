@@ -11,7 +11,6 @@ namespace MergeTest2
         {
             Globals.ReadCfgFile();
             GlobalFontSettings.FontResolver = new CustomFontResolver();
-            //Console.WriteLine("Hello, World!");
             if (args.Length == 0)
             {
                 Console.WriteLine("no args");
@@ -39,7 +38,6 @@ namespace MergeTest2
                     File.Delete(file);
             }
             List<string> docsList = new List<string>();
-            //DocsetRecord doc;
             int currRow = 0;
             try
             {
@@ -49,7 +47,6 @@ namespace MergeTest2
                     while ((line = sr.ReadLine()) != null)
                     {
                         currRow++;
-                        //Console.WriteLine(line);
                         if (line.Length > 0)
                         {
                             if (line.Substring(0, 1) != "#")
@@ -73,7 +70,6 @@ namespace MergeTest2
                     string? line;
                     while ((line = sr.ReadLine()) != null)
                     {
-                        //Console.WriteLine(line);
                         if (!string.IsNullOrEmpty(line))
                         {
                             if (line.Substring(0, 1) != "#")  // skip comments
@@ -86,7 +82,6 @@ namespace MergeTest2
                     //Console.WriteLine("***mergeDataDict***");
                     //foreach (KeyValuePair<string, string> entry in mergeDataDict)
                     //    Console.WriteLine($"Key: {entry.Key}, Value: {entry.Value}");
-                    //Console.WriteLine(">>>>" + mergeDataDict["Borrower1FullName"] + "<<<<");
                 }
             }
             catch (Exception ex)
@@ -195,7 +190,6 @@ namespace MergeTest2
 
         public static void MergePrintDocument(string DocumentFileName, string MergeFileName, Dictionary<string, string> mergeDataDict, int tempDocNumber, bool drawGrid = false)
         {
-            //Console.WriteLine($">>>{DocumentFileName} {MergeFileName}<<<");
             List<DocumentMergeDataRecord> mergeFieldList = new List<DocumentMergeDataRecord>();
             DocumentMergeDataRecord mergeRec;
             int currRow = 0;
@@ -293,10 +287,10 @@ namespace MergeTest2
                 {
                     font = new XFont("Arial", 10, XFontStyleEx.Regular);
                     XPen pen = new XPen(XColors.Pink, 1.0 / 36.0);
-                    for (int iPages = 0; iPages < pdfDocument.Pages.Count; iPages++)
+                    for (int iPage = 0; iPage < pdfDocument.Pages.Count; iPage++)
                     {
                         //page = pdfDocument.Pages[0];
-                        page = pdfDocument.Pages[iPages];
+                        page = pdfDocument.Pages[iPage];
                         gfx = XGraphics.FromPdfPage(page);
                         pageWidth = page.Width;
                         pageHeight = page.Height;
@@ -324,7 +318,6 @@ namespace MergeTest2
                     }
                 }
 
-                //Console.WriteLine($"Saving page to {Globals.PathToOutputFiles}{intermediateDocName}");
                 pdfDocument.Save($"{Globals.PathToOutputFiles}{intermediateDocName}");
                 pdfDocument.Dispose();
                 //Console.WriteLine($"============{DocumentFileName}================");
