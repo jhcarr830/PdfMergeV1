@@ -1,4 +1,4 @@
-﻿namespace MergeTest2
+﻿namespace PdfMergeV1
 {
     internal class Globals
     {

@@ -3,7 +3,7 @@ using PdfSharp.Fonts;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
 
-namespace MergeTest2
+namespace PdfMergeV1
 {
     internal class Program
     {

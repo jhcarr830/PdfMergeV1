@@ -1,4 +1,4 @@
-# MergeTest2
+# PdfMergeV1
 
 Merge data onto existing individual pdf files, combining all output into a single pdf file.
 

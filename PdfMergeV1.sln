@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
+VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MergeTest2", "MergeTest2.csproj", "{02923DCB-2C05-482F-8F33-7DF56A7A96BC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfMergeV1", "PdfMergeV1.csproj", "{02923DCB-2C05-482F-8F33-7DF56A7A96BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

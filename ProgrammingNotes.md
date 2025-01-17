@@ -3,7 +3,7 @@
 ## Publishing information from Copilot:
 
 ```
-I have created a C# Console app with Visual Studio 2022. In the final release folder, the resulting executable file (MergeTest2.exe) exists along with various other files, including .dll, .json, .pdf. Can I create a single executable file, for distribution, without the need for these additional files?
+I have created a C# Console app with Visual Studio 2022. In the final release folder, the resulting executable file (PdfMergeV1.exe) exists along with various other files, including .dll, .json, .pdf. Can I create a single executable file, for distribution, without the need for these additional files?
 ```
 
 Yes, it's possible to create a single executable file for distribution. You can use the .NET Core single-file deployment option. Here's how you can do it:
