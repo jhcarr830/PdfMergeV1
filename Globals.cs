@@ -13,7 +13,7 @@
         public static string PathToFontFiles { get; set; } = "";
         public static string PathToMergeFiles { get; set; } = "";
 
-        public static void ReadCfgFile()
+        public static int ReadCfgFile()
         {
             try
             {
@@ -51,11 +51,13 @@
                         }
                     }
                 }
+                return 1;
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error reading configuration file");
-                Console.WriteLine(ex.ToString());
+                Console.WriteLine($"\nError reading configuration file ({CONFIGURATION_FILE_NAME}), or the file was not found in working directory.");
+                //Console.WriteLine(ex.ToString());
+                return -1;
             }
 
         }

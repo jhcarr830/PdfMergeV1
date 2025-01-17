@@ -9,11 +9,14 @@ namespace PdfMergeV1
     {
         static void Main(string[] args)
         {
-            Globals.ReadCfgFile();
+            int iResult = Globals.ReadCfgFile();
+            if (iResult == -1)
+                return;
             GlobalFontSettings.FontResolver = new CustomFontResolver();
-            if (args.Length == 0)
+            if (args.Length < 3)
             {
-                Console.WriteLine("no args");
+                Console.WriteLine("\nUsage: PdfMergeV1.exe docsetFileName mergeDataFileName outputFileName [grid/nogrid]");
+                Console.WriteLine("\nNote: Argument 4, [grid/nogrid] must be the word 'grid' if you want to\ndraw a grid on every document. If you omit the fourth argument or use\nany other word, no grid will be added.");
                 return;
             }
             Console.WriteLine("Command Line Arguments:");
@@ -23,10 +26,11 @@ namespace PdfMergeV1
             }
             string docsetFileName = args[0];  // contains list of documents to be printed
             string mergedataFileName = args[1];  // contains the data to be merged into documents
+            string outputFileName = args[2];  // name of output file
             bool drawGrid = false;
-            if (args.Length > 2)
+            if (args.Length > 3)
             {
-                string sDrawGrid = args[2];
+                string sDrawGrid = args[3];
                 if (sDrawGrid == "grid")
                     drawGrid = true;
             }
@@ -100,8 +104,8 @@ namespace PdfMergeV1
                 tempDocNumber++;
             }
             // merge all documents into one:
-            if (File.Exists(Globals.PathToOutputFiles + "CombinedDocs.pdf"))
-                File.Delete(Globals.PathToOutputFiles + "CombinedDocs.pdf");
+            if (File.Exists(Globals.PathToOutputFiles + outputFileName))
+                File.Delete(Globals.PathToOutputFiles + outputFileName);
             var intermediateFiles = Directory.GetFiles(Globals.PathToOutputFiles, "Temp_*.pdf");
             // sort the list
             Array.Sort(intermediateFiles);
@@ -117,7 +121,7 @@ namespace PdfMergeV1
                 if (File.Exists(file))
                     File.Delete(file);
             }
-             outputDocument.Save(Globals.PathToOutputFiles + "CombinedDocs.pdf");
+            outputDocument.Save(Globals.PathToOutputFiles + outputFileName);
         }
 
         public class CustomFontResolver : IFontResolver
