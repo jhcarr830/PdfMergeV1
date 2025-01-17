@@ -7,11 +7,11 @@
         const string CONFIGURATION_FILE_OLD_NAME = "PdfMergeCfg.old";
 
         //Note: These paths must end with a backslash:
-        public static string? PathToDataFiles { get; set; }
-        public static string? PathToSourceFiles { get; set; }
-        public static string? PathToOutputFiles { get; set; }
-        public static string? PathToFontFiles { get; set; }
-        public static string? PathToMergeFiles { get; set; }
+        public static string PathToDataFiles { get; set; } = "";
+        public static string PathToSourceFiles { get; set; } = "";
+        public static string PathToOutputFiles { get; set; } = "";
+        public static string PathToFontFiles { get; set; } = "";
+        public static string PathToMergeFiles { get; set; } = "";
 
         public static void ReadCfgFile()
         {

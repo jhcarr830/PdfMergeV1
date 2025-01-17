@@ -32,7 +32,7 @@ namespace MergeTest2
                     drawGrid = true;
             }
             // delete temp files in output directory (in case there are leftovers)
-            var temporaryfiles = Directory.GetFiles(Globals.PathToOutputFiles, "Temp_*.pdf");
+            var temporaryfiles = Directory.GetFiles(path: Globals.PathToOutputFiles, searchPattern: "Temp_*.pdf");
             foreach (string file in temporaryfiles)
             {
                 if (File.Exists(file))
@@ -172,7 +172,7 @@ namespace MergeTest2
             }
             public byte[] GetFont(string faceName)
             {
-                var fontPath = Path.Combine(Globals.PathToFontFiles, faceName);
+                var fontPath = Path.Combine(path1: Globals.PathToFontFiles, path2: faceName);
                 using (var ms = new MemoryStream())
                 {
                     try
