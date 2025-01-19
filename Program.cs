@@ -24,11 +24,11 @@ namespace PdfMergeV1
                 Console.WriteLine("\nNote: Argument 4, [grid/nogrid] must be the word 'grid' if you want to\ndraw a grid on every document. If you omit the fourth argument or use\nany other word, no grid will be added.");
                 return ARGUMENTS_ERROR;
             }
-            Console.WriteLine("Command Line Arguments:");
-            for (int i = 0; i < args.Length; i++)
-            {
-                Console.WriteLine(args[i]);
-            }
+            //Console.WriteLine("Command Line Arguments:");
+            //for (int i = 0; i < args.Length; i++)
+            //{
+            //    Console.WriteLine(args[i]);
+            //}
             string docsetFileName = args[0];  // contains list of documents to be printed
             string mergedataFileName = args[1];  // contains the data to be merged into documents
             string outputFileName = args[2];  // name of output file
