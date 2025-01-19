@@ -7,17 +7,22 @@ namespace PdfMergeV1
 {
     internal class Program
     {
-        static void Main(string[] args)
+        const int CONFIG_FILE_ERROR = 1;
+        const int ARGUMENTS_ERROR = 2;
+        const int MERGE_DATA_FILE_ERROR = 3;
+        const int MERGE_DOCUMENT_DATA_ERROR = 4;
+        const int MERGE_PRINT_ERROR = 5;
+        static int Main(string[] args)
         {
             int iResult = Globals.ReadCfgFile();
             if (iResult == -1)
-                return;
+                return CONFIG_FILE_ERROR;
             GlobalFontSettings.FontResolver = new CustomFontResolver();
             if (args.Length < 3)
             {
                 Console.WriteLine("\nUsage: PdfMergeV1.exe docsetFileName mergeDataFileName outputFileName [grid/nogrid]");
                 Console.WriteLine("\nNote: Argument 4, [grid/nogrid] must be the word 'grid' if you want to\ndraw a grid on every document. If you omit the fourth argument or use\nany other word, no grid will be added.");
-                return;
+                return ARGUMENTS_ERROR;
             }
             Console.WriteLine("Command Line Arguments:");
             for (int i = 0; i < args.Length; i++)
@@ -79,7 +84,13 @@ namespace PdfMergeV1
                             if (line.Substring(0, 1) != "#")  // skip comments
                             {
                                 string[] parts = line.Split('\t');
-                                mergeDataDict.Add(parts[0], parts[1]);
+                                if (parts.Length > 1)
+                                    mergeDataDict.Add(parts[0], parts[1]);
+                                else
+                                {
+                                    Console.WriteLine($"Error in Merge Data File ({mergedataFileName})");
+                                    return MERGE_DATA_FILE_ERROR;
+                                }
                             }
                         }
                     }
@@ -100,7 +111,10 @@ namespace PdfMergeV1
             // Print all documents in the document set in order.
             for (int ixx = 0; ixx < docsList.Count; ixx++)
             {
-                MergePrintDocument(docsList[ixx] + ".pdf", docsList[ixx] + ".mrg", mergeDataDict, tempDocNumber, drawGrid);
+                int iMergePrintReturnValue = 0;
+                iMergePrintReturnValue = MergePrintDocument(docsList[ixx] + ".pdf", docsList[ixx] + ".mrg", mergeDataDict, tempDocNumber, drawGrid);
+                if (iMergePrintReturnValue != 0)
+                    return iMergePrintReturnValue;
                 tempDocNumber++;
             }
             // merge all documents into one:
@@ -122,6 +136,7 @@ namespace PdfMergeV1
                     File.Delete(file);
             }
             outputDocument.Save(Globals.PathToOutputFiles + outputFileName);
+            return 0;  // success
         }
 
         public class CustomFontResolver : IFontResolver
@@ -192,7 +207,7 @@ namespace PdfMergeV1
             }
         }
 
-        public static void MergePrintDocument(string DocumentFileName, string MergeFileName, Dictionary<string, string> mergeDataDict, int tempDocNumber, bool drawGrid = false)
+        public static int MergePrintDocument(string DocumentFileName, string MergeFileName, Dictionary<string, string> mergeDataDict, int tempDocNumber, bool drawGrid = false)
         {
             List<DocumentMergeDataRecord> mergeFieldList = new List<DocumentMergeDataRecord>();
             DocumentMergeDataRecord mergeRec;
@@ -241,6 +256,7 @@ namespace PdfMergeV1
                             else
                             {
                                 Console.WriteLine($"Error in row {currRow} file {Globals.PathToMergeFiles + MergeFileName}");
+                                return MERGE_DOCUMENT_DATA_ERROR;
                             }
                         }
                     }
@@ -334,8 +350,9 @@ namespace PdfMergeV1
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
+                return MERGE_PRINT_ERROR;
             }
-            
+            return 0;
         }
 
         public class DocumentMergeDataRecord
