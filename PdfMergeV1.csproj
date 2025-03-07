@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="PDFsharp" Version="6.2.0-preview-2" />
+    <PackageReference Include="PDFsharp" Version="6.2.0-preview-3" />
   </ItemGroup>
 
   <ItemGroup>
