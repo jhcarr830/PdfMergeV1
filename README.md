@@ -73,12 +73,13 @@ The error message will contain text similar to this:
 
 ## Document Merge File
 
-This file is tab-delimited, each line containing 7 values: FieldName, FontName, FontSize, FontStyle, XPos, and YPos.
+This file is tab-delimited, each line containing 8 values: FieldName, FontName, FontSize, FontStyle, Justify, XPos, and YPos.
 
 - FieldName is the name of the field to be merged into the specified location. It must match a field name in the MergeData.tab file, described above.
 - FontName is the font to use. Valid values are "Arial" and "Times".
 - FontSize is the point size of the field value that will print. To be readable, normal font sizes would be 10 points or 12 points. Larger font sizes would be used for headings, etc. Smaller font sizes may be disputed in court if the document is a legal contract. Attorney advice is recommended.
 - FontStyle is R (Regular), B (Bold), I (Italic), and BI (Bold Italic).
+- Justify is L (Left) and R (Right). When Justify is R, the text will be right-justified at the XPos position.
 - XPos is the X position (distance from left edge, in points) for the beginning of the value to be printed.
 - YPos is the Y position (distance from the top edge, in points) for the beginning of the value to be printed.
 
@@ -88,19 +89,19 @@ Example Document Merge file (LoanDataSheet.mrg):
 
 ```
 #FieldName\tFontName\tFontSize\tFontStyle\tPage\tXPos\tYPos
-Borrower1FullName\tArial\t12\tB\t1\t180\t93
-Borrower2FullName\tArial\t12\tB\t1\t180\t105
-Borrower3FullName\tArial\t12\tB\t1\t180\t117
-Borrower4FullName\tArial\t12\tB\t1\t180\t129
-PropertyStreet\tArial\t12\tI\t1\t180\t145
-PropertyCity\tArial\t12\tR\t1\t180\t159
-PropertyState\tArial\t12\tR\t1\t180\t175
-PropertyZip\tArial\t12\tR\t1\t180\t190
-LegalDescription1\tArial\t12\tBI\t1\t180\t216
-LegalDescription2\tArial\t12\tBI\t1\t180\t232
-Principal\tArial\t12\tR\t1\t180\t245
-InterestRate\tArial\t12\tR\t1\t180\t258
-LoanTerm\tArial\t12\tR\t1\t180\t271
+Borrower1FullName\tArial\t12\tB\t1\tL\t180\t93
+Borrower2FullName\tArial\t12\tB\t1\tL\t180\t105
+Borrower3FullName\tArial\t12\tB\t1\tL\t180\t117
+Borrower4FullName\tArial\t12\tB\t1\tL\t180\t129
+PropertyStreet\tArial\t12\tI\t1\tL\t180\t145
+PropertyCity\tArial\t12\tR\t1\tL\t180\t159
+PropertyState\tArial\t12\tR\t1\tL\t180\t175
+PropertyZip\tArial\t12\tR\t1\tL\t180\t190
+LegalDescription1\tArial\t12\tBI\t1\tL\t180\t216
+LegalDescription2\tArial\t12\tBI\t1\tL\t180\t232
+Principal\tArial\t12\tR\t1\tR\t300\t245
+InterestRate\tArial\t12\tR\t1\tL\t180\t258
+LoanTerm\tArial\t12\tR\t1\tL\t180\t271
 ```
 
 ## Document Set File
