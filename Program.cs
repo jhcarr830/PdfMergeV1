@@ -300,22 +300,23 @@ namespace PdfMergeV1
                font = new XFont(rec.FontName, rec.FontSize, fontStyle);
                pageWidth = page.Width;
                pageHeight = page.Height;
-               // 3/28/25 - todo: draw left or right justified text
                //Console.WriteLine($"{rec.FieldName}, {rec.FontName}, {rec.FontSize}, {rec.FontStyle}, {rec.Page}, {rec.Justify}, {rec.XPos}, {rec.YPos}, {mergeDataDict[rec.FieldName]}");
-               //rec.FieldName, mergeDataDict)
-               if (rec.Justify == "R")
+               if (mergeDataDict[rec.FieldName] != "")
                {
-                  double width = gfx.MeasureString(mergeDataDict[rec.FieldName], font).Width;
-                  //This works: XRect rect = new XRect(rec.XPos - width, rec.YPos, width, 100);
-                  XRect rect = new XRect(rec.XPos - width, rec.YPos, width, font.Height);
-                  XTextFormatter tf = new XTextFormatter(gfx);
-                  tf.Alignment = XParagraphAlignment.Right;
-                  tf.DrawString(mergeDataDict[rec.FieldName], font, XBrushes.Black, rect, XStringFormats.TopLeft);
+                  if (rec.Justify == "R")
+                  {
+                     double width = gfx.MeasureString(mergeDataDict[rec.FieldName], font).Width;
+                     //This works: XRect rect = new XRect(rec.XPos - width, rec.YPos, width, 100);
+                     XRect rect = new XRect(rec.XPos - width, rec.YPos, width, font.Height);
+                     XTextFormatter tf = new XTextFormatter(gfx);
+                     tf.Alignment = XParagraphAlignment.Right;
+                     tf.DrawString(mergeDataDict[rec.FieldName], font, XBrushes.Black, rect, XStringFormats.TopLeft);
+                  }
+                  else
+                     gfx.DrawString(mergeDataDict[rec.FieldName], font, XBrushes.Black, new XRect(rec.XPos, rec.YPos, pageWidth, pageHeight), XStringFormats.TopLeft);
+                  gfx.Dispose();
+                  //Console.WriteLine("===" + mergeDataDict[rec.FieldName] + "===");
                }
-               else
-                  gfx.DrawString(mergeDataDict[rec.FieldName], font, XBrushes.Black, new XRect(rec.XPos, rec.YPos, pageWidth, pageHeight), XStringFormats.TopLeft);
-               gfx.Dispose();
-               //Console.WriteLine("===" + mergeDataDict[rec.FieldName] + "===");
             }
 
             if (drawGrid)
